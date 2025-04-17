@@ -39,6 +39,13 @@ steps:
     ls -R test-results
   displayName: 'Run Unit Tests and Output JUnit XML'
 # Step 5: Deploy to Azure Web App
+- task: ArchiveFiles@2
+  inputs:
+    rootFolderOrFile: '$(System.DefaultWorkingDirectory)'
+    includeRootFolder: false
+    archiveType: 'zip'
+    archiveFile: '$(Build.ArtifactStagingDirectory)/app.zip'
+    replaceExistingArchive: true
 - task: AzureWebApp@1
   inputs:
     azureSubscription: 'RupeshAzureConnection'
