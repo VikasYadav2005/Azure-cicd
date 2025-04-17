@@ -31,13 +31,13 @@ steps:
     python -m xmlrunner discover -s pipline.tests -o test-results
   displayName: 'Run Unit Tests and Output JUnit XML'
 # Step 4: Publish test results to Azure DevOps
-- task: PublishTestResults@2
-  inputs:
-    testResultsFormat: 'JUnit'
-    testResultsFiles: 'test-results/*.xml'
-    failTaskOnMissingResultsFile: true
-    testRunTitle: 'Python Unit Tests'
-
+- script: |
+    source venv/bin/activate
+    mkdir -p test-results
+    python -m xmlrunner discover -s pipline.tests -o test-results
+    echo "Directory structure after test run:"
+    ls -R test-results
+  displayName: 'Run Unit Tests and Output JUnit XML'
 # Step 5: Deploy to Azure Web App
 - task: AzureWebApp@1
   inputs:
