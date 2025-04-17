@@ -25,12 +25,11 @@ steps:
   displayName: 'Install dependencies'
 
 # Step 3: Run tests and generate JUnit XML report
-- script: |
+- script: 
     source venv/bin/activate
     mkdir -p test-results
-    python -m xmlrunner discover -s pipline/tests -o test-results
+    python -m xmlrunner discover -s pipline.tests -o test-results
   displayName: 'Run Unit Tests and Output JUnit XML'
-
 # Step 4: Publish test results to Azure DevOps
 - task: PublishTestResults@2
   inputs:
