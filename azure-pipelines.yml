@@ -1,5 +1,5 @@
 trigger:
-  - main  # Replace with your default branch if different
+  - main
 
 pool:
   vmImage: 'ubuntu-latest'
@@ -22,12 +22,21 @@ steps:
       pytest tests/
     displayName: 'Run tests'
 
-  # Optional: Publish test results (if using pytest with JUnit-style output)
-  # - script: |
-  #     pytest --junitxml=test-results.xml
-  #   displayName: 'Run tests with JUnit output'
+  - task: PublishTestResults@2
+    inputs:
+      testResultsFiles: '**/test-*.xml'
+      testRunTitle: 'Python Test Results'
 
-  # - task: PublishTestResults@2
-  #   inputs:
-  #     testResultsFiles: '**/test-results.xml'
-  #     testRunTitle: 'Python Test Results'
+  - task: ArchiveFiles@2
+    inputs:
+      rootFolderOrFile: $(Build.SourcesDirectory)
+      includeRootFolder: false
+      archiveType: 'zip'
+      archiveFile: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
+      replaceExistingArchive: true
+
+  - task: PublishBuildArtifacts@1
+    inputs:
+      PathtoPublish: $(Build.ArtifactStagingDirectory)
+      ArtifactName: drop
+      publishLocation: 'Container'
