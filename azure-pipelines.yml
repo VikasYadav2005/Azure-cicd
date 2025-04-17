@@ -1,0 +1,33 @@
+trigger:
+  - main  # Replace with your default branch if different
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  pythonVersion: '3.10'
+
+steps:
+  - task: UsePythonVersion@0
+    inputs:
+      versionSpec: '$(pythonVersion)'
+      addToPath: true
+
+  - script: |
+      python -m pip install --upgrade pip
+      pip install -r requirements.txt
+    displayName: 'Install dependencies'
+
+  - script: |
+      pytest tests/
+    displayName: 'Run tests'
+
+  # Optional: Publish test results (if using pytest with JUnit-style output)
+  # - script: |
+  #     pytest --junitxml=test-results.xml
+  #   displayName: 'Run tests with JUnit output'
+
+  # - task: PublishTestResults@2
+  #   inputs:
+  #     testResultsFiles: '**/test-results.xml'
+  #     testRunTitle: 'Python Test Results'
