@@ -1,24 +1,47 @@
 trigger:
-  - main
+- main
 
 pool:
   vmImage: 'ubuntu-latest'
 
-variables:
-  pythonVersion: '3.10'
-
 steps:
-  - task: UsePythonVersion@0
-    inputs:
-      versionSpec: '$(pythonVersion)'
-      addToPath: true
 
-  - script: |
-      python -m pip install --upgrade pip
-      pip install -r requirements.txt
-    displayName: 'Install dependencies'
+# Step 0: Checkout your repo (must-have!)
+- checkout: self
 
-  - script: |
-      pytest tests/
-    displayName: 'Run tests'
-    workingDirectory: $(Build.SourcesDirectory)/tests  # Set the working directory to 'tests'
+# Step 1: Set up Python
+- task: UsePythonVersion@0
+  inputs:
+    versionSpec: '3.x'
+    addToPath: true
+
+# Step 2: Install dependencies
+- script: |
+    python -m venv venv
+    source venv/bin/activate
+    pip install --upgrade pip
+    pip install -r requirements.txt
+    pip install unittest-xml-reporting
+  displayName: 'Install dependencies'
+
+# Step 3: Run tests and generate JUnit XML report
+- script: |
+    source venv/bin/activate
+    mkdir -p test-results
+    python -m xmlrunner discover -s pipline/tests -o test-results
+  displayName: 'Run Unit Tests and Output JUnit XML'
+
+# Step 4: Publish test results to Azure DevOps
+- task: PublishTestResults@2
+  inputs:
+    testResultsFormat: 'JUnit'
+    testResultsFiles: 'test-results/*.xml'
+    failTaskOnMissingResultsFile: true
+    testRunTitle: 'Python Unit Tests'
+
+# Step 5: Deploy to Azure Web App
+- task: AzureWebApp@1
+  inputs:
+    azureSubscription: 'RupeshAzureConnection'
+    appName: 'samplepythonapprupesh'
+    package: '$(System.DefaultWorkingDirectory)'
