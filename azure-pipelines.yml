@@ -43,4 +43,5 @@ steps:
   inputs:
     azureSubscription: 'RupeshAzureConnection'
     appName: 'samplepythonapprupesh'
-    package: '$(System.DefaultWorkingDirectory)'
+    package: '$(System.DefaultWorkingDirectory)/**/*.zip'
+    deploymentMethod: 'runFromPackage'
