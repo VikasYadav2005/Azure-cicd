@@ -21,22 +21,4 @@ steps:
   - script: |
       pytest tests/
     displayName: 'Run tests'
-
-  - task: PublishTestResults@2
-    inputs:
-      testResultsFiles: '**/test-*.xml'
-      testRunTitle: 'Python Test Results'
-
-  - task: ArchiveFiles@2
-    inputs:
-      rootFolderOrFile: $(Build.SourcesDirectory)
-      includeRootFolder: false
-      archiveType: 'zip'
-      archiveFile: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
-      replaceExistingArchive: true
-
-  - task: PublishBuildArtifacts@1
-    inputs:
-      PathtoPublish: $(Build.ArtifactStagingDirectory)
-      ArtifactName: drop
-      publishLocation: 'Container'
+    workingDirectory: $(Build.SourcesDirectory)/tests  # Set the working directory to 'tests'
